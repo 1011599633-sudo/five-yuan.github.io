@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>购物折扣计算器 - 占小便宜专家</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            overflow: hidden;
+            padding: 30px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #ff6b6b;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 0 rgba(255, 107, 107, 0.1);
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+        
+        .input-section {
+            margin-bottom: 30px;
+        }
+        
+        .input-group {
+            margin-bottom: 25px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #444;
+            font-size: 1.1rem;
+        }
+        
+        .price-input {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 1.8rem;
+            font-weight: bold;
+            border: 3px solid #ddd;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s;
+            color: #333;
+        }
+        
+        .price-input:focus {
+            border-color: #4dabf7;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(77, 171, 247, 0.2);
+        }
+        
+        .calculate-btn {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 100%);
+            color: white;
+            border: none;
+            padding: 18px 30px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+            letter-spacing: 1px;
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+        }
+        
+        .calculate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.4);
+        }
+        
+        .calculate-btn:active {
+            transform: translateY(0);
+        }
+        
+        .result-section {
+            background-color: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+            border: 2px dashed #dee2e6;
+        }
+        
+        .result-title {
+            font-size: 1.3rem;
+            color: #495057;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        
+        .result-label {
+            font-size: 1.2rem;
+            color: #6c757d;
+        }
+        
+        .result-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #212529;
+        }
+        
+        .discount-message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.3rem;
+            min-height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.5s;
+        }
+        
+        .message-default {
+            background-color: #e9ecef;
+            color: #495057;
+        }
+        
+        .message-high {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .message-medium {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .message-low {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .message-none {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .discount-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .discount-tier {
+            flex: 1;
+            min-width: 120px;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .tier-1 {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 100%);
+        }
+        
+        .tier-2 {
+            background: linear-gradient(135deg, #4dabf7 0%, #69c0ff 100%);
+        }
+        
+        .tier-3 {
+            background: linear-gradient(135deg, #20c997 0%, #38d9a9 100%);
+        }
+        
+        .tier-4 {
+            background: linear-gradient(135deg, #868e96 0%, #adb5bd 100%);
+        }
+        
+        .discount-tier h3 {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+        
+        .discount-tier p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #868e96;
+            font-size: 0.9rem;
+        }
+        
+        .original-price {
+            text-decoration: line-through;
+            color: #868e96;
+        }
+        
+        .final-price {
+            color: #ff6b6b;
+            font-size: 1.8rem !important;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .price-input {
+                font-size: 1.5rem;
+            }
+            
+            .discount-info {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>购物折扣计算器</h1>
+            <p>欢迎使用购物折扣计算器！请问我们该如何帮助您占小便宜？</p>
+        </div>
+        
+        <div class="input-section">
+            <div class="input-group">
+                <label for="price">请输入您购物的马内，穷人勿扰</label>
+                <input type="number" id="price" class="price-input" placeholder="输入金额（元）" min="0" step="1">
+            </div>
+            
+            <button id="calculate" class="calculate-btn">计算我的折扣</button>
+        </div>
+        
+        <div class="result-section">
+            <div class="result-title">折扣计算结果</div>
+            
+            <div class="result-item">
+                <span class="result-label">原价：</span>
+                <span id="original-price" class="result-value original-price">0 元</span>
+            </div>
+            
+            <div class="result-item">
+                <span class="result-label">最终付款金额：</span>
+                <span id="final-price" class="result-value final-price">0 元</span>
+            </div>
+            
+            <div id="message" class="discount-message message-default">
+                请输入金额查看折扣信息
+            </div>
+        </div>
+        
+        <div class="discount-info">
+            <div class="discount-tier tier-1">
+                <h3>尊享VIP</h3>
+                <p>≥1000元<br>优惠八折</p>
+            </div>
+            <div class="discount-tier tier-2">
+                <h3>高级会员</h3>
+                <p>≥500元<br>优惠九折</p>
+            </div>
+            <div class="discount-tier tier-3">
+                <h3>普通会员</h3>
+                <p>≥200元<br>立减30元</p>
+            </div>
+            <div class="discount-tier tier-4">
+                <h3>潜力客户</h3>
+                <p>&lt;200元<br>没有折扣</p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2023 占小便宜专家 | 基于C++购物折扣计算器转换</p>
+        </div>
+    </div>
+
+    <script>
+        // 获取DOM元素
+        const priceInput = document.getElementById('price');
+        const calculateBtn = document.getElementById('calculate');
+        const originalPriceDisplay = document.getElementById('original-price');
+        const finalPriceDisplay = document.getElementById('final-price');
+        const messageDisplay = document.getElementById('message');
+        
+        // 折扣计算函数 - 与C++程序逻辑完全相同
+        function calculateDiscount(originalPrice) {
+            let familyPrice = 0;
+            let message = "";
+            
+            if (originalPrice >= 1000) {
+                familyPrice = originalPrice * 0.8;
+                message = "电线炸了，优惠八折";
+            } else if (originalPrice >= 500) {
+                familyPrice = originalPrice * 0.9;
+                message = "711炸了，优惠九折";
+            } else if (originalPrice >= 200) {
+                familyPrice = originalPrice - 30;
+                message = "减30够啥的，继续去消费";
+            } else {
+                familyPrice = originalPrice;
+                message = "好意思吗你，不多消费不准走";
+            }
+            
+            return { familyPrice, message };
+        }
+        
+        // 更新消息框样式
+        function updateMessageStyle(originalPrice) {
+            messageDisplay.className = "discount-message ";
+            
+            if (originalPrice === 0) {
+                messageDisplay.classList.add("message-default");
+            } else if (originalPrice >= 1000) {
+                messageDisplay.classList.add("message-high");
+            } else if (originalPrice >= 500) {
+                messageDisplay.classList.add("message-medium");
+            } else if (originalPrice >= 200) {
+                messageDisplay.classList.add("message-low");
+            } else {
+                messageDisplay.classList.add("message-none");
+            }
+        }
+        
+        // 计算按钮点击事件
+        calculateBtn.addEventListener('click', function() {
+            const originalPrice = parseFloat(priceInput.value) || 0;
+            
+            // 更新原价显示
+            originalPriceDisplay.textContent = `${originalPrice.toFixed(2)} 元`;
+            
+            // 计算折扣
+            const { familyPrice, message } = calculateDiscount(originalPrice);
+            
+            // 更新最终价格显示
+            finalPriceDisplay.textContent = `${familyPrice.toFixed(2)} 元`;
+            
+            // 更新消息显示
+            messageDisplay.textContent = message;
+            
+            // 更新消息框样式
+            updateMessageStyle(originalPrice);
+        });
+        
+        // 输入框回车事件
+        priceInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                calculateBtn.click();
+            }
+        });
+        
+        // 页面加载时显示默认值
+        window.addEventListener('load', function() {
+            priceInput.value = "500";
+            calculateBtn.click();
+        });
+    </script>
+</body>
+</html>
